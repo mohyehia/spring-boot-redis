@@ -2,12 +2,16 @@ package com.mohyehia.redis.service;
 
 import com.mohyehia.redis.entity.User;
 
-import java.util.Map;
+import java.util.List;
 
 public interface UserService {
     User save(User user);
-    Map<String, User> findAll();
+
+    List<User> findAll();
+
     User findById(String userId);
-    void update(User user);
+
+    void update(String userId, User user);
+
     void delete(String userId);
 }

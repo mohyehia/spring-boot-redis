@@ -1,44 +1,50 @@
 package com.mohyehia.redis.service.impl;
 
 import com.mohyehia.redis.entity.User;
+import com.mohyehia.redis.repository.UserRepository;
 import com.mohyehia.redis.service.UserService;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final HashOperations<String, String, User> hashOperations;
 
-    public UserServiceImpl(RedisTemplate<String, User> redisTemplate) {
-        this.hashOperations = redisTemplate.opsForHash();
-    }
+    private final UserRepository userRepository;
 
     @Override
     public User save(User user) {
-        hashOperations.put("USER", user.getId(), user);
-        return findById(user.getId());
+        user.setId(UUID.randomUUID().toString());
+        user.setTimeToLive(600);
+        return userRepository.save(user);
     }
 
     @Override
-    public Map<String, User> findAll() {
-        return hashOperations.entries("USER");
+    public List<User> findAll() {
+        List<User> users = new ArrayList<>();
+        userRepository.findAll().forEach(users::add);
+        return users;
     }
 
     @Override
     public User findById(String userId) {
-        return hashOperations.get("USER", userId);
+        return userRepository.findById(userId).orElse(null);
     }
 
     @Override
-    public void update(User user) {
-        save(user);
+    public void update(String userId, User user) {
+        User retrievedUser = userRepository.findById(userId).orElseThrow(() -> new IllegalStateException("User not found"));
+        retrievedUser.setName(user.getName());
+        retrievedUser.setSalary(user.getSalary());
+        userRepository.save(retrievedUser);
     }
 
     @Override
     public void delete(String userId) {
-        hashOperations.delete("USER", userId);
+        userRepository.deleteById(userId);
     }
 }
