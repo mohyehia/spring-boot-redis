@@ -24,9 +24,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<User> findAll(String name) {
         List<User> users = new ArrayList<>();
-        userRepository.findAll().forEach(users::add);
+        if (name == null || name.trim().isEmpty()) {
+            userRepository.findAll().forEach(users::add);
+        } else {
+            users.addAll(userRepository.findByName(name));
+        }
         return users;
     }
 

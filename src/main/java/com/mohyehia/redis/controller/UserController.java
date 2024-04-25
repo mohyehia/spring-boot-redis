@@ -23,8 +23,8 @@ public class UserController {
     }
 
     @GetMapping({"", "/"})
-    public ResponseEntity<List<User>> findAll() {
-        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<User>> findAll(@RequestParam(value = "name", required = false) String name) {
+        return new ResponseEntity<>(userService.findAll(name), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}")
