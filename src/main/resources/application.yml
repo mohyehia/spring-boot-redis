@@ -9,3 +9,20 @@ spring:
       port: 6379
       repositories:
         enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    diskspace:
+      enabled: true
+    redis:
+      enabled: true
